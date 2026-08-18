@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <!-- خطوط عريضة وقوية تناسب الألعاب -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&family=Bangers&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: transparent; /* شفافية تامة */
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* الحاوية الرئيسية - تأثير الظهور */
+        .float-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transform: scale(0.5) rotate(-10deg);
+            transition: all 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* حركة ارتدادية */
+            filter: drop-shadow(0 0 8px rgba(0,0,0,0.5));
+        }
+
+        .float-container.show {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
+
+        /* --- الجزء العلوي (الأيقونة والـ X2) --- */
+        .top-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* أيقونة القفاز - ستايل نيون متوهج */
+        .glove-icon {
+            font-size: 50px;
+            filter: drop-shadow(0 0 10px #ff0055) drop-shadow(0 0 20px #ff0055);
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        /* نص X2 - ستايل كوميدي/أكشن */
+        .x2-text {
+            font-family: 'Bangers', cursive; /* خط قوي ومميز */
+            font-size: 80px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 
+                4px 4px 0px #ff0055, /* ظل سميك */
+                0 0 15px rgba(255, 255, 255, 0.5);
+            letter-spacing: 2px;
+        }
+
+        /* --- الجزء السفلي (العداد الخطي البسيط) --- */
+        .bottom-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .timer-text {
+            font-family: 'Cairo', sans-serif;
+            font-size: 22px;
+            font-weight: 900;
+            color: #ffd700; /* لون ذهبي */
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        /* شريط تقدم خطي بسيط جداً ونحيف (PNG Style) */
+        .simple-line-bar {
+            width: 150px;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background-color: #ffd700; /* ذهبي */
+            width: 100%;
+            transition: width 1s linear;
+            box-shadow: 0 0 10px #ffd700;
+        }
+
+        /* تأثير نبض للأيقونة */
+        @keyframes pulse {
+            from { transform: scale(1); filter: drop-shadow(0 0 10px #ff0055); }
+            to { transform: scale(1.05); filter: drop-shadow(0 0 15px #ff0055) drop-shadow(0 0 5px #ff7799); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- الحاوية الرئيسية -->
+    <div class="float-container" id="widgetContainer">
+        <!-- المجموعة العلوية: الأيقونة و X2 -->
+        <div class="top-group">
+            <div class="glove-icon">🥊</div>
+            <div class="x2-text">X2</div>
+        </div>
+
+        <!-- المجموعة السفلية: العداد وشريط التقدم -->
+        <div class="bottom-group">
+            <div class="timer-text"><span id="timerCount">30</span> ثانية</div>
+            <div class="simple-line-bar">
+                <div class="bar-fill" id="barFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // الإعدادات (يمكنك تغييرها)
+        const duration = 30; // مدة الظهور بالثواني
+        const intervalTime = 120000; // 120,000ms = دقيقتين
+
+        const container = document.getElementById('widgetContainer');
+        const timerDisplay = document.getElementById('timerCount');
+        const barFill = document.getElementById('barFill');
+
+        function runEffect() {
+            // 1. إعادة تعيين وإظهار
+            let timeLeft = duration;
+            timerDisplay.textContent = timeLeft;
+            barFill.style.width = '100%';
+            container.classList.add('show');
+
+            // 2. تشغيل العد التنازلي
+            let countdown = setInterval(() => {
+                timeLeft--;
+
+                if (timeLeft >= 0) {
+                    timerDisplay.textContent = timeLeft;
+                    // حساب النسبة المئوية للشريط
+                    const percentage = (timeLeft / duration) * 100;
+                    barFill.style.width = percentage + '%';
+                } else {
+                    // 3. انتهاء الوقت
+                    clearInterval(countdown);
+                    container.classList.remove('show'); // إخفاء الودجت
+                }
+            }, 1000);
+        }
+
+        // --- التشغيل التلقائي ---
+        
+        // التشغيل فور فتح الودجت
+        runEffect();
+
+        // التكرار كل دقيقتين
+        setInterval(runEffect, intervalTime);
+
+    </script>
+</body>
+</html>
