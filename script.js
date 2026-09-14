@@ -1,39 +1,30 @@
-// الإعدادات (يمكنك تغييرها)
-const duration = 30; // مدة الظهور بالثواني
-const intervalTime = 120000; // 120,000ms = دقيقتين
+const tap=document.getElementById('tap');
 
-const container = document.getElementById('widgetContainer');
-const timerDisplay = document.getElementById('timerCount');
-const barFill = document.getElementById('barFill');
+function effect(e){
+  const r=tap.getBoundingClientRect();
+  const x=(e.clientX ?? r.left+r.width/2)-r.left;
+  const y=(e.clientY ?? r.top+r.height/2)-r.top;
 
-function runEffect() {
-    // 1. إعادة تعيين وإظهار
-    let timeLeft = duration;
-    timerDisplay.textContent = timeLeft;
-    barFill.style.width = '100%';
-    container.classList.add('show');
+  const ripple=document.createElement('span');
+  ripple.className='ripple';
+  ripple.style.left=(x-10)+'px';
+  ripple.style.top=(y-10)+'px';
+  tap.appendChild(ripple);
+  setTimeout(()=>ripple.remove(),800);
 
-    // 2. تشغيل العد التنازلي
-    let countdown = setInterval(() => {
-        timeLeft--;
+  const symbols=['✦','✧','♡','⋆','·'];
+  for(let i=0;i<5;i++){
+    const s=document.createElement('span');
+    s.className='spark';
+    s.textContent=symbols[Math.floor(Math.random()*symbols.length)];
+    s.style.left=x+'px';
+    s.style.top=y+'px';
+    s.style.setProperty('--x',(Math.random()*150-75)+'px');
+    s.style.setProperty('--y',(-35-Math.random()*90)+'px');
+    tap.appendChild(s);
+    setTimeout(()=>s.remove(),1100);
+  }
 
-        if (timeLeft >= 0) {
-            timerDisplay.textContent = timeLeft;
-            // حساب النسبة المئوية للشريط
-            const percentage = (timeLeft / duration) * 100;
-            barFill.style.width = percentage + '%';
-        } else {
-            // 3. انتهاء الوقت
-            clearInterval(countdown);
-            container.classList.remove('show'); // إخفاء الودجت
-        }
-    }, 1000);
+  if(navigator.vibrate) navigator.vibrate(10);
 }
-
-// --- التشغيل التلقائي ---
-
-// التشغيل فور فتح الودجت
-runEffect();
-
-// التكرار كل دقيقتين
-setInterval(runEffect, intervalTime);
+tap.addEventListener('pointerdown',effect);
